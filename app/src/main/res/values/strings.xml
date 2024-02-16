@@ -1,0 +1,74 @@
+<resources>
+    <string name="app_name">Conversores</string>
+    <string-array name="spnLongitud">
+        <item>Metros</item>
+        <item>Cm</item>
+        <item>Pulgada</item>
+        <item>Pie</item>
+        <item>Varas</item>
+        <item>Yardas</item>
+        <item>Km</item>
+        <item>Millas</item>
+    </string-array>
+
+    <string-array name="spnMonedas">
+        <item>Dolar</item>
+        <item>Euro</item>
+        <item>Libra Esternila</item>
+        <item>Yen japones</item>
+        <item>Dolar Canadiense</item>
+        <item>Franco Suizo</item>
+        <item>Dolar Australiano</item>
+        <item>Dolar Neozelandes</item>
+        <item>Peso Mexicano</item>
+        <item>Yuan Chino</item>
+    </string-array>
+
+    <string-array name="spnAlmacenamiento">
+        <item>Bit</item>
+        <item>Byte</item>
+        <item>KiloByte</item>
+        <item>MegaByte</item>
+        <item>GigaByte</item>
+        <item>TeraByte</item>
+        <item>PetaByte</item>
+    </string-array>
+
+    <string-array name="spnDatos">
+        <item>Bits</item>
+        <item>Kilobits</item>
+        <item>Megabits</item>
+        <item>Gigabits</item>
+        <item>Terabits</item>
+    </string-array>
+    <string-array name="spnMasa">
+        <item>Kilogramo</item>
+        <item>Gramo</item>
+        <item>Libra</item>
+        <item>Onza</item>
+        <item>Miligramo</item>
+        <item>Microgramo</item>
+        <item>Tonelada</item>
+        <item>Quintal</item>
+    </string-array>
+    <string-array name="spnVolumen">
+        <item>Litro</item>
+        <item>Mililitro</item>
+        <item>Metro cúbico</item>
+        <item>Centímetro cúbico</item>
+        <item>Pie cúbico</item>
+        <item>Galón</item>
+        <item>Onza líquida</item>
+        <item>Barril</item>
+    </string-array>
+    <string-array name="spnTiempo">
+        <item>Milisegundo</item>
+        <item>Segundo</item>
+        <item>Minuto</item>
+        <item>Hora</item>
+        <item>Dia</item>
+        <item>Semana</item>
+        <item>Mes</item>
+        <item>Año</item>
+    </string-array>
+</resources>
