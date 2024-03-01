@@ -1,243 +1,143 @@
 package com.example.conversoress;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.RadioGroup;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.conversoress.R;
 
 public class MainActivity extends AppCompatActivity {
+
     TabHost tbh;
-    TextView tempVal;
-    Spinner spn;
-    Button btn;
-    conversores objConversor = new conversores();
+    Spinner spnArea, spnDArea;
+    TextView tvResultadoAgua, txtMetrosConsumidos;
+    EditText txtCantidadArea;
+    Button btnConvertirArea, btnCalcularAgua; // Eliminado btnRealizarConversion y nuevoButton ya que no están en el diseño XML
+    Conversores miObj = new Conversores();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tbh = findViewById(R.id.tbhConversores);
+        tbh = findViewById(R.id.tbhParcial);
         tbh.setup();
-        tbh.addTab(tbh.newTabSpec("LON").setIndicator("LONGITUD", null).setContent(R.id.Longitud));
-        tbh.addTab(tbh.newTabSpec("MON").setIndicator("MONEDAS", null).setContent(R.id.Divisas));
-        tbh.addTab(tbh.newTabSpec("ALM").setIndicator("ALMACENAMIENTO", null).setContent(R.id.Almacenamiento));
-        tbh.addTab(tbh.newTabSpec("DTS").setIndicator("Datos", null).setContent(R.id.Datos));
-        tbh.addTab(tbh.newTabSpec("MSA").setIndicator("Masa", null).setContent(R.id.Masa));
-        tbh.addTab(tbh.newTabSpec("VLM").setIndicator("Volumen", null).setContent(R.id.Volumen));
-        tbh.addTab(tbh.newTabSpec("TMP").setIndicator("Tiempo", null).setContent(R.id.Tiempo));
 
-        //botonLongitud
-        btn = findViewById(R.id.btnCalcularLongitud);
-        btn.setOnClickListener(new View.OnClickListener() {
+        // Pestaña "Calcular Metros Consumidos por Agua"
+        tbh.addTab(tbh.newTabSpec("CalcularAgua").setContent(R.id.tab_CalcularAgua).setIndicator("Calcular Agua", null));
+        btnCalcularAgua = findViewById(R.id.btnCalcularAgua);
+        txtMetrosConsumidos = findViewById(R.id.txtMetrosConsumidos);
+        tvResultadoAgua = findViewById(R.id.tvResultadoAgua);
+
+        // Pestaña "Conversor"
+        tbh.addTab(tbh.newTabSpec("Conversor").setContent(R.id.tab_Conversor).setIndicator("Conversor", null));
+
+        ArrayAdapter<CharSequence> adapterArea = ArrayAdapter.createFromResource(this,
+                R.array.spnARea, android.R.layout.simple_spinner_item);
+        adapterArea.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spnArea = findViewById(R.id.spnArea);
+        spnArea.setAdapter(adapterArea);
+
+        spnDArea = findViewById(R.id.spnDArea);
+        spnDArea.setAdapter(adapterArea);
+
+        // Inicializar componentes para la pestaña "Conversor"
+        ArrayAdapter<CharSequence> adapterUnidades = ArrayAdapter.createFromResource(this,
+                R.array.spnARea, android.R.layout.simple_spinner_item);
+        adapterUnidades.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        txtCantidadArea = findViewById(R.id.txtCantidadArea);
+
+        btnConvertirArea = findViewById(R.id.btnConvertirArea);
+
+        btnConvertirArea.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
-                //verificacion de si el edit text esta vacio
-                EditText txtCantidadLongitud = findViewById(R.id.txtCantidadLongitud);
-                String cantidadStr = txtCantidadLongitud.getText().toString().trim();
-                if (cantidadStr.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                spn = findViewById(R.id.spnDeLongitud);
-                int de = spn.getSelectedItemPosition();
-
-                spn = findViewById(R.id.spnALongitud);
-                int a = spn.getSelectedItemPosition();
-
-                tempVal = findViewById(R.id.txtCantidadLongitud);
-                double cantidad = Double.parseDouble(tempVal.getText().toString());
-                double resp = objConversor.convertir(0, de, a, cantidad);
-
-                Toast.makeText(getApplicationContext(), "Respuesta: " + resp, Toast.LENGTH_LONG).show();
+            public void onClick(View v) {
+                int de = spnArea.getSelectedItemPosition();
+                int a = spnDArea.getSelectedItemPosition();
+                double cantidad = Double.parseDouble(txtCantidadArea.getText().toString());
+                double respuesta = miObj.convertir(0, de, a, cantidad);
+                tvResultadoAgua.setText("Resultado: " + respuesta);
+                Toast.makeText(getApplicationContext(), "Respuesta " + respuesta, Toast.LENGTH_SHORT).show();
             }
         });
 
-        //botonMonedas
-        btn = findViewById(R.id.btnCalcularMoneda);
-        btn.setOnClickListener(new View.OnClickListener() {
+        btnCalcularAgua.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                // Obtén los metros consumidos desde el EditText
+                double metrosConsumidos = Double.parseDouble(txtMetrosConsumidos.getText().toString());
 
-                //verificacion de si el edit text esta vacio
-                EditText txtCantidadMoneda = findViewById(R.id.txtCantidadMoneda);
-                String cantidadStr = txtCantidadMoneda.getText().toString().trim();
-                if (cantidadStr.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                // Calcula el costo del agua utilizando el método en la clase Conversores
+                double costoAgua = miObj.calcularCostoAgua(metrosConsumidos);
 
-                spn = findViewById(R.id.spnDeMoneda);
-                int de = spn.getSelectedItemPosition();
-
-                spn = findViewById(R.id.spnAMoneda);
-                int a = spn.getSelectedItemPosition();
-
-                tempVal = findViewById(R.id.txtCantidadMoneda);
-
-                double cantidad = Double.parseDouble(tempVal.getText().toString());
-                double resp = objConversor.convertir(1, de, a, cantidad);
-
-                Toast.makeText(getApplicationContext(), "Respuesta: " + resp, Toast.LENGTH_LONG).show();
-            }
-        });
-
-        //botonAlmacenamiento
-        btn = findViewById(R.id.btnCalcularAlmacenamiento);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //verificacion de si el edit text esta vacio
-                EditText txtCantidadAlmacenamiento = findViewById(R.id.txtCantidadAlmacenamiento);
-                String cantidadStr = txtCantidadAlmacenamiento.getText().toString().trim();
-                if (cantidadStr.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                spn = findViewById(R.id.spnDeAlmacenamiento);
-                int de = spn.getSelectedItemPosition();
-
-                spn = findViewById(R.id.spnAAlmacenamiento);
-                int a = spn.getSelectedItemPosition();
-
-                tempVal = findViewById(R.id.txtCantidadAlmacenamiento);
-                double cantidad = Double.parseDouble(tempVal.getText().toString());
-                double resp = objConversor.convertir(2, de, a, cantidad);
-
-                Toast.makeText(getApplicationContext(), "Respuesta: " + resp, Toast.LENGTH_LONG).show();
-            }
-        });
-
-        //botonDatos
-        btn = findViewById(R.id.btnCalcularDatos);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //verificacion de si el edit text esta vacio
-                EditText txtCantidadDatos = findViewById(R.id.txtCantidadDatos);
-                String cantidadStr = txtCantidadDatos.getText().toString().trim();
-                if (cantidadStr.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                spn = findViewById(R.id.spnDeDatos);
-                int de = spn.getSelectedItemPosition();
-
-                spn = findViewById(R.id.spnADatos);
-                int a = spn.getSelectedItemPosition();
-
-                tempVal = findViewById(R.id.txtCantidadDatos);
-                double cantidad = Double.parseDouble(tempVal.getText().toString());
-                double resp = objConversor.convertir(3, de, a, cantidad);
-
-                Toast.makeText(getApplicationContext(), "Respuesta: " + resp, Toast.LENGTH_LONG).show();
-            }
-        });
-        //botonMasa
-        btn = findViewById(R.id.btnCalcularMasa);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //verificacion de si el edit text esta vacio
-                EditText txtCantidadMasa = findViewById(R.id.txtCantidadMasa);
-                String cantidadStr = txtCantidadMasa.getText().toString().trim();
-                if (cantidadStr.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                spn = findViewById(R.id.spnDeMasa);
-                int de = spn.getSelectedItemPosition();
-
-                spn = findViewById(R.id.spnAMasa);
-                int a = spn.getSelectedItemPosition();
-
-                tempVal = findViewById(R.id.txtCantidadMasa);
-                double cantidad = Double.parseDouble(tempVal.getText().toString());
-                double resp = objConversor.convertir(4, de, a, cantidad);
-
-                Toast.makeText(getApplicationContext(), "Respuesta: " + resp, Toast.LENGTH_LONG).show();
-            }
-        });
-
-        //botonVolumen
-        btn = findViewById(R.id.btnCalcularVolumen);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //verificacion de si el edit text esta vacio
-                EditText txtCantidadVolumen = findViewById(R.id.txtCantidadVolumen);
-                String cantidadStr = txtCantidadVolumen.getText().toString().trim();
-                if (cantidadStr.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                spn = findViewById(R.id.spnDeVolumen);
-                int de = spn.getSelectedItemPosition();
-
-                spn = findViewById(R.id.spnAVolumen);
-                int a = spn.getSelectedItemPosition();
-
-                tempVal = findViewById(R.id.txtCantidadVolumen);
-                double cantidad = Double.parseDouble(tempVal.getText().toString());
-                double resp = objConversor.convertir(5, de, a, cantidad);
-
-                Toast.makeText(getApplicationContext(), "Respuesta: " + resp, Toast.LENGTH_LONG).show();
-            }
-        });
-
-        //botonTiempo
-        btn = findViewById(R.id.btnCalcularTiempo);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //verificacion de si el edit text esta vacio
-                EditText txtCantidadTiempo = findViewById(R.id.txtCantidadTiempo);
-                String cantidadStr = txtCantidadTiempo.getText().toString().trim();
-                if (cantidadStr.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                spn = findViewById(R.id.spnDeTiempo);
-                int de = spn.getSelectedItemPosition();
-
-                spn = findViewById(R.id.spnATiempo);
-                int a = spn.getSelectedItemPosition();
-
-                tempVal = findViewById(R.id.txtCantidadTiempo);
-                double cantidad = Double.parseDouble(tempVal.getText().toString());
-                double resp = objConversor.convertir(6, de, a, cantidad);
-
-                Toast.makeText(getApplicationContext(), "Respuesta: " + resp, Toast.LENGTH_LONG).show();
+                // Muestra el resultado en el TextView
+                tvResultadoAgua.setText("Costo del agua: $" + costoAgua);
             }
         });
     }
 
-
-    class conversores {
+    // Clase Conversores ahora es estática
+    static class Conversores {
         double[][] valores = {
-                {1, 100, 39.3701, 3.28084, 1.193, 1.09361, 0.001, 0.000621371}, /*longitud*/
-                {1.0, 0.84, 0.73, 110.59, 1.27, 0.92, 1.31, 1.38, 20.08, 6.35},  //divisas
-                {1, 0.125, 0.000125, 1.25e-7, 1.25e-10, 1.25e-13, 1.25e-16}, //almacenamiento digital
-                {1,0.001,0.0000001,0.0000000001,0.0000000000001}, //transferencia de datos
-                {1, 1000, 2.20462, 35.274, 1000000, 1000000000, 0.001, 0.01}, //Masa
-                {1, 1000, 0.001, 1000, 0.001308, 0.264172, 33.814, 0.00629}, //volumen
-                {1000, 1, 0.01667, 0.0002778, 1.157E-5, 1.653E-6, 3.803E-7, 3.169E-8}//tiempo
+                {1, 10.763, 1.43, 1.19599, 0.001590, 0.0001434, 0.0001}
         };
 
         public double convertir(int opcion, int de, int a, double cantidad) {
             return valores[opcion][a] / valores[opcion][de] * cantidad;
         }
 
+        public double calcularCostoAgua(double metrosConsumidos) {
+            double cuotaFija = 6.0;
+            double tarifaAdicionalPrimeraParte = 0.45;
+            double tarifaAdicionalSegundaParte = 0.65;
+            int limitePrimeraParte = 18;
+            int limiteSegundaParte = 28;
 
+            // Si la cantidad de metros consumidos está en la primera parte
+            if (metrosConsumidos <= limitePrimeraParte) {
+                return cuotaFija; // Cuota fija
+            }
+
+            // Si la cantidad de metros consumidos está en la segunda parte
+            if (metrosConsumidos <= limiteSegundaParte) {
+                // Resta el límite superior
+                double metrosExcedidos = metrosConsumidos - limitePrimeraParte;
+
+                // Calcula la tarifa adicional para los primeros metros
+                double tarifaAdicionalPrimera = metrosExcedidos * tarifaAdicionalPrimeraParte;
+
+                // Suma la cuota fija y la tarifa adicional
+                return cuotaFija + tarifaAdicionalPrimera;
+            }
+
+            // Si la cantidad de metros consumidos está en la tercera parte
+            // Resta el límite superior
+            double metrosExcedidos = metrosConsumidos - limiteSegundaParte;
+
+            // Calcula la tarifa adicional para los primeros metros
+            double tarifaAdicionalPrimera = (limiteSegundaParte - limitePrimeraParte) * tarifaAdicionalPrimeraParte;
+
+            // Calcula la tarifa adicional para los metros restantes
+            double tarifaAdicionalSegunda = metrosExcedidos * tarifaAdicionalSegundaParte;
+
+            // Suma la cuota fija y las tarifas adicionales
+            return cuotaFija + tarifaAdicionalPrimera + tarifaAdicionalSegunda;
+        }
+
+        public double realizarConversion(String unidad, double valor) {
+            double resultado = 0.0;
+            // Agrega la lógica de conversión según tus requisitos
+            return resultado;
+        }
     }
 }
